@@ -60,7 +60,17 @@ ruby:2.6
 ruby:latest
 "
 
+<<<<<<< HEAD
 for di in ${DOCKER_IMAGES}
 do
 (retry 2 docker pull ${di}) || echo "Error pulling ${di} Docker image, we continue"
 done
+=======
+if [ -x "$(command -v docker)" ]; then
+  for di in ${DOCKER_IMAGES}
+  do
+  (retry 2 docker pull "${di}") || echo "Error pulling ${di} Docker image, we continue"
+  done
+  (retry 2 .ci/scripts/build-docker-all.sh) || echo "Error building images for the apm-it, we continue"
+fi
+>>>>>>> 38db0e5... Support build command and retry in the CI (#1047)

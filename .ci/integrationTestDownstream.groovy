@@ -108,10 +108,24 @@ pipeline {
         REUSE_CONTAINERS = "true"
       }
       steps {
+<<<<<<< HEAD
         deleteDir()
         unstash "source"
         dir("${BASE_DIR}"){
           sh ".ci/scripts/all.sh"
+=======
+        withGithubNotify(context: 'All', isBlueOcean: true) {
+          deleteDir()
+          unstash "source"
+          filebeat(output: "docker-all.log", archiveOnlyOnFail: true){
+            dir("${BASE_DIR}"){
+              retryWithSleep(retries: 3, seconds: 5, backoff: true) {
+                sh(label: 'Prepare docker images', script: '.ci/scripts/build-docker-all.sh')
+              }
+              sh(label: 'Run all', script: '.ci/scripts/all.sh')
+            }
+          }
+>>>>>>> 38db0e5... Support build command and retry in the CI (#1047)
         }
       }
       post {
