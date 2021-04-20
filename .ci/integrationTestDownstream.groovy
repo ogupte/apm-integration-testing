@@ -108,12 +108,6 @@ pipeline {
         REUSE_CONTAINERS = "true"
       }
       steps {
-<<<<<<< HEAD
-        deleteDir()
-        unstash "source"
-        dir("${BASE_DIR}"){
-          sh ".ci/scripts/all.sh"
-=======
         withGithubNotify(context: 'All', isBlueOcean: true) {
           deleteDir()
           unstash "source"
@@ -125,7 +119,6 @@ pipeline {
               sh(label: 'Run all', script: '.ci/scripts/all.sh')
             }
           }
->>>>>>> 38db0e5... Support build command and retry in the CI (#1047)
         }
       }
       post {
