@@ -45,6 +45,8 @@ pipeline {
     stage('Checkout'){
       options { skipDefaultCheckout() }
       steps {
+        echo "Correct PR"
+        sh('git show-ref')
         deleteDir()
         gitCheckout(basedir: "${BASE_DIR}",
           branch: "${params.INTEGRATION_TESTING_VERSION}",
@@ -186,11 +188,9 @@ class IntegrationTestingParallelTaskGenerator extends DefaultParallelTaskGenerat
           ]
         def label = "${tag}-${x}-${y}"
         try{
+          saveResult(x, y, 0)
           steps.runScript(label: label, agentType: tag, env: env)
           saveResult(x, y, 1)
-        } catch (e){
-          saveResult(x, y, 0)
-          steps.error("${label} tests failed : ${e.toString()}\n")
         } finally {
           steps.wrappingup(label)
         }
@@ -208,26 +208,29 @@ def runScript(Map params = [:]){
   def label = params.containsKey('label') ? params.label : params?.agentType
   def agentType = params.agentType
   def env = params.env
-  log(level: 'INFO', text: "${label}")
-  deleteDir()
-  unstash "source"
-  dir("${BASE_DIR}"){
-    withEnv(env){
-      sh """#!/bin/bash
-      export TMPDIR="${WORKSPACE}"
-      .ci/scripts/${agentType}.sh
-      """
+  def dockerLogs = label.replace(":","_").replace(";","_").replace(" ","").replace("--","-")
+  withGithubNotify(context: "${label}", isBlueOcean: true) {
+    log(level: 'INFO', text: "${label}")
+    deleteDir()
+    unstash "source"
+    filebeat(output: "docker-${dockerLogs}.log", archiveOnlyOnFail: true){
+      sh 'docker ps -a'
+      dir("${BASE_DIR}"){
+        withEnv(env){
+          sh(label: "Testing ${agentType}", script: ".ci/scripts/${agentType}.sh")
+          sh 'docker ps -a'
+        }
+      }
     }
   }
 }
 
 def wrappingup(label){
   dir("${BASE_DIR}"){
-    if(currentBuild.result == 'FAILURE' || currentBuild.result == 'UNSTABLE'){
-      dockerLogs(step: label, failNever: true)
-    }
+    def testResultsFolder = 'tests/results'
+    def testResultsPattern = "${testResultsFolder}/*-junit*.xml"
+    def labelFolder = normalise(label)
     sh('make stop-env || echo 0')
-    def testResultsPattern = 'tests/results/*-junit*.xml'
     archiveArtifacts(
         allowEmptyArchive: true,
         artifacts: "tests/results/data-*.json,tests/results/packetbeat-*.json,${testResultsPattern}",
@@ -237,4 +240,8 @@ def wrappingup(label){
     sh(label: 'Generate debug docs', script: '.ci/scripts/generate-debug-docs.sh | tee docs.txt')
     archiveArtifacts(artifacts: 'docs.txt')
   }
+}
+
+def normalise(label) {
+  return label?.replace(';','/').replace('--','_').replace('.','_').replace(' ','_')
 }
