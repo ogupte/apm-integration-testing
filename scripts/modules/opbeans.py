@@ -522,13 +522,9 @@ class OpbeansPython(OpbeansService):
                 "ELASTIC_APM_SOURCE_LINES_SPAN_LIBRARY_FRAMES",
                 "REDIS_URL=redis://redis:6379",
                 "ELASTICSEARCH_URL={}".format(self.es_urls),
-<<<<<<< HEAD
                 "OPBEANS_USER=opbeans_user",
                 "OPBEANS_PASS=changeme",
-                "OPBEANS_SERVER_URL=http://opbeans-python:3000",
-=======
                 "OPBEANS_SERVER_URL=http://opbeans-python:{}".format(self.APPLICATION_PORT),
->>>>>>> 44af3b3 ([Feature] Dyno (#1028))
                 "PYTHON_AGENT_BRANCH=" + self.agent_branch,
                 "PYTHON_AGENT_REPO=" + self.agent_repo,
                 "PYTHON_AGENT_VERSION",
