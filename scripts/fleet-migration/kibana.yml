@@ -1,0 +1,91 @@
+#server.name: kibana
+server.host: "0"
+#elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
+
+elastic.apm.active: true
+elastic.apm.serverUrl: "http://apm-server:8200"
+
+
+xpack.apm.agent.migrations.enabled: true
+xpack.fleet.registryUrl: "https://epr-snapshot.elastic.co"
+
+xpack.fleet.packages:
+  - name: fleet_server
+    version: latest
+  - name: system
+    version: latest
+
+xpack.fleet.agentPolicies:
+  # Cloud Agent policy
+  - name: Elastic Cloud agent policy
+    description: Default agent policy for agents hosted on Elastic Cloud
+    id: policy-elastic-agent-on-cloud
+
+    is_default: false
+    is_managed: false
+    is_default_fleet_server: false
+
+    namespace: default
+    monitoring_enabled: []
+
+    package_policies:
+      - name: Fleet Server
+        package:
+          name: fleet_server
+        inputs:
+          - type: fleet-server
+            keep_enabled: true
+
+            vars:
+              - name: host
+                value: 0.0.0.0
+                frozen: true
+              - name: port
+                value: 8220
+                frozen: true
+              - name: max_connections
+                value: 200 # Hard limit on the number of connections accepted; defends TLS connection flood.
+              - name: custom
+                value: |
+                  cache:
+                    num_counters: 2000        # Limit the size of the hash table to rougly 10x expected number of elements
+                    max_cost: 2097152         # Limit the total size of data allowed in the cache, 2 MiB in bytes.
+                  server.limits:
+                     policy_throttle: 200ms  # Roll out a new policy every 200ms; roughly 5 per second.
+                     checkin_limit:
+                       interval: 50ms        # Check in no faster than 20 per second.
+                       burst: 25             # Allow burst up to 25, then fall back to interval rate.
+                       max: 100              # No more than 100 long polls allowed. THIS EFFECTIVELY LIMITS MAX ENDPOINTS.
+                     artifact_limit:
+                       interval: 100ms       # Roll out 10 artifacts per second
+                       burst: 10             # Small burst prevents outbound buffer explosion.
+                       max: 10               # Only 10 transactions at a time max.  This should generally not be a relavent limitation as the transactions are cached.
+                     ack_limit:
+                       interval: 10ms        # Allow ACK only 100 per second.  ACK payload is unbounded in RAM so need to limit.
+                       burst: 20             # Allow burst up to 20, then fall back to interrval rate.
+                       max: 20               # Cannot have too many processing at once due to unbounded payload size.
+                     enroll_limit:
+                       interval: 100ms       # Enroll is both CPU and RAM intensive.  Limit to 10 per second.
+                       burst: 5              # Allow intial burst, but limit to max.
+                       max: 10               # Max limit.
+                  server.runtime:
+                    gc_percent: 20          # Force the GC to execute more frequently: see https://golang.org/pkg/runtime/debug/#SetGCPercent
+
+  # Default policy
+  - name: Default policy
+    description: Default agent policy created by Kibana
+
+    is_default: true
+    is_managed: false
+
+    namespace: default
+    monitoring_enabled:
+      - logs
+      - metrics
+
+    package_policies:
+      - name: system-1
+        package:
+          name: system
+

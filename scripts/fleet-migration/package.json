@@ -1,0 +1,20 @@
+{
+  "name": "apm-integration-testing-fleet-migration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "setup": "node index.js setup",
+    "start": "node index.js start",
+    "fleet-apm": "node index.js fleet-apm",
+    "standalone-apm": "node index.js standalone-apm",
+    "down": "node index.js down",
+    "help": "node index.js help"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "author": "Oliver Gupte",
+  "license": "Apache-2.0"
+}
