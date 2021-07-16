@@ -235,7 +235,7 @@ switch (process.argv[2]) {
     await dockerComposeDown();
     break;
   default:
-    console.log(`Available commands ${COMMANDS.map(cmd => cmd.name).join(', ')}:\n`);
+    console.log(`Available commands: ${COMMANDS.map(cmd => cmd.name).join(', ')}:\n`);
     console.log(COMMANDS.map(cmd => {
       return `    ${cmd.name}:\n        ${cmd.description}`;
     }).join('\n\n'));
