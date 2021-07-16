@@ -49,3 +49,5 @@ Available commands: setup, start, fleet-apm, standalone-apm, down:
         Stops all services and removes all volumes.
 ```
 
+## Customize
+Customize the script `scripts/fleet-migration/generate_docker_compose.sh` to add familiar options you wish to the compose script: additional services, branches/snapshot, security, etc.
