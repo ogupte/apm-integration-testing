@@ -7,9 +7,9 @@
   "scripts": {
     "setup": "node index.js setup",
     "start": "node index.js start",
-    "fleet-apm": "node index.js fleet-apm",
-    "standalone-apm": "node index.js standalone-apm",
-    "down": "node index.js down",
+    "use-fleet-apm": "node index.js use-fleet-apm",
+    "use-standalone-apm": "node index.js use-standalone-apm",
+    "clean": "node index.js clean",
     "help": "node index.js help"
   },
   "engines": {

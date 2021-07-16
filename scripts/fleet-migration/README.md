@@ -19,14 +19,14 @@ These scripts simplify the setup required to make apm-integration-testing work t
 3. Start kibana with `node scripts/kibana.js --dev --port 5603 --no-base-path`
 4. Log in to kibana and go to http://localhost:5603/app/fleet#/agents to confirm the Elastic Cloud agent policy is running on an Elastic Agent.
 5. Go to http://localhost:5603/app/apm/settings/schema to test the migration.
-6. Once the migration is complete, run `./scripts/fleet-migration/fleet-apm.sh` to update the services to point to the Fleet-managed APM Server.
+6. Once the migration is complete, run `./scripts/fleet-migration/use-fleet-apm.sh` to update the services to point to the Fleet-managed APM Server.
 7. Confirm that data streams are created at http://localhost:5603/app/fleet#/data-streams
 
 ## Usage
 ```
 $ node ./scripts/fleet-migration/index.js [COMMAND]
 
-Available commands: setup, start, fleet-apm, standalone-apm, down:
+Available commands: setup, start, use-fleet-apm, use-standalone-apm, clean:
 
     setup:
         Creates the docker-compose.yml file and modifies it to work for Fleet
@@ -37,17 +37,17 @@ Available commands: setup, start, fleet-apm, standalone-apm, down:
         in docker. Then, fleet server host and APM Server settings are push to
         kibana.
 
-    fleet-apm:
+    use-fleet-apm:
         Updates all services to use the Fleet-managed APM Server instead of the
         standalone APM Server.
 
-    standalone-apm:
+    use-standalone-apm:
         Updates all services to use the standalone APM Server instead of the
         Fleet-managed APM Server.
 
-    down:
+    clean:
         Stops all services and removes all volumes.
 ```
 
 ## Customize
-Customize the script `scripts/fleet-migration/generate_docker_compose.sh` to add familiar options you wish to the compose script: additional services, branches/snapshot, security, etc.
+Before running any commands, customize the script `scripts/fleet-migration/generate_docker_compose.sh` to add familiar options you wish to the compose script: additional services, branches/snapshot, security, etc.

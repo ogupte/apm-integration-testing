@@ -137,7 +137,7 @@ async function waitForKibana() {
       process.stdout.write('.');
       const response = await request({ url: 'http://localhost:5601/api/status', timeout: 1500 });
       if (response.statusCode === 200) {
-        console.log(' ready!');
+        console.log(' Ready!');
         resolve();
       } else {
         setTimeout(pollKibanaStatus, 1000);
@@ -205,15 +205,15 @@ const COMMANDS = [
     description: `Creates the docker-compose.yml, modifies it, then starts all services in docker. Then, fleet server host and APM Server settings are push to kibana.`,
   },
   {
-    name: 'fleet-apm',
+    name: 'use-fleet-apm',
     description: `Updates all services to use the Fleet-managed APM Server instead of the standalone APM Server.`,
   },
   {
-    name: 'standalone-apm',
+    name: 'use-standalone-apm',
     description: `Updates all services to use the standalone APM Server instead of the Fleet-managed APM Server.`,
   },
   {
-    name: 'down',
+    name: 'clean',
     description: `Stops all services and removes all volumes.`,
   },
 ];
@@ -225,13 +225,13 @@ switch (process.argv[2]) {
   case 'start':
     await startFleetMigrationEnv();
     break;
-  case 'fleet-apm':
+  case 'use-fleet-apm':
     await pointServicesToFleetApm();
     break;
-  case 'standalone-apm':
+  case 'use-standalone-apm':
     await pointServicesToStandalongApm();
     break;
-  case 'down':
+  case 'clean':
     await dockerComposeDown();
     break;
   default:

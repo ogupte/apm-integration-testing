@@ -1,11 +1,6 @@
 #server.name: kibana
 server.host: "0"
 #elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-monitoring.ui.container.elasticsearch.enabled: true
-
-elastic.apm.active: true
-elastic.apm.serverUrl: "http://apm-server:8200"
-
 
 xpack.apm.agent.migrations.enabled: true
 xpack.fleet.registryUrl: "https://epr-snapshot.elastic.co"
