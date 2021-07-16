@@ -10,10 +10,12 @@ These scripts simplify the setup required to make apm-integration-testing work t
 ## Set up locally running Kibana for APM Fleet migration
 1. Run `./scripts/fleet-migration/start.sh` to initialize the Fleet migration setup.
 2. Checkout a branch in `kibana` (>=7.14) with these options set in `kibana.dev.yml`:
+```
     xpack.apm.agent.migrations.enabled: true
     xpack.fleet.registryUrl: "https://epr-snapshot.elastic.co"
     elasticsearch.username: kibana_system_user
     elasticsearch.password: changeme
+```
 3. Start kibana with `node scripts/kibana.js --dev --port 5603 --no-base-path`
 4. Log in to kibana and go to http://localhost:5603/app/fleet#/agents to confirm the Elastic Cloud agent policy is running on an Elastic Agent.
 5. Go to http://localhost:5603/app/apm/settings/schema to test the migration.
